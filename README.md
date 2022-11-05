@@ -49,11 +49,44 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
     - Its fields describes their properties.
     - Relationships between them.
   - Hierarchical relationships tend to reflect the containment or ownership between resources.
-  - Hierarchical relationships make sense when a child resource can have only one parent, like the relationship between a mother and her son.
+  - Hierarchical relationships make sense when a child resource can have only one parent, like the relationship between a folder and a file.
   - Before creating an API resource relationship, be sure that is really necessary.
   - In-line vs in-reference data, when should use each of them? Depends on how often you think data is going to be necessary and the structure of them:
     - In-line data should be use when data is not complex and it is going to be necessary for clients very often.
     - In-reference data should be use when data is complex and it is not going to be requested very often by clients.
-  - Not everything in an API is a resource. Creating unnecessary resources can create deep hierarchies which will increase the interaction between your clients and the API.
+  - Not everything in an API is a resource. Creating unnecessary resources can end up with deep hierarchies which will make more difficult the interaction between your clients and the API.
     - Things that are always related to the same resource can be defined as data types.
-    - Do you need to interact with a resource in isolation? Or it is always linked to another one? Answering those question can provide you a hint of if a resource is really necessary.
+    - Do you need to interact with a resource in isolation? Or it is always linked to another one? Answering those questions can provide you a hint of if a resource is really necessary.
+
+## Chapter 5 - Data types and defaults
+
+- Serialization vs deserialization.
+  - Converting from language data representation to language-agnostic data representation (eg: JSON, XML) is called **Serialization**.
+  - Converting language-agnostic data representation to language data representation is called **Deserialization**.
+- Boolean data type.
+  - Zero value is *false*.
+  - Positive names are easier to understand than negative ones (eg: **allowedNumbers** vs **disallowedNumbers**)
+- Number data type.
+  - Zero value is *0* or *0.0*. 
+  - Number data types should be used when we expect clients of the API to do any kind of arithmetic operation with the field's value. For example, using numbers for ids is not a good fit.
+  - Serialize number data types to string could be an option for avoiding mismatches when client's programming language does not have appropiate native representation.
+- String data type.
+  - Zero value is *""*.
+  - An API should use UTF-8 encoding format unless there is any special reason not to do it.
+  - In order to create a predictable API, we should reject any string that exceed the size limit or that are not using the expected encoding format.
+- Enumeration data type.
+  - Advantages of using enumeration data type:
+    - Easier validation.
+    - Compresion because its data representation is usually using numbers instead of strings.
+  - API requests and responses should avoid use enumerations. In order to provide a better readibility, we should use strings.
+- List data type.
+  - It should be atomic, which means that if one item of the list needs to be update, the entire list should be replaced.
+  - It should not be possible to update a list field from a resource. For example, if we have a resource called Book where Book.categories is a list, book categories cannot be update using the Book resource API. Instead, we should use the Category resource API.
+  - It should have a size limit in order to avoid potential performance issues, specially when the resource can grow dynamically. Pagination is one of the mechanism to control the list size on an API response.
+- Map data type.
+  - Two kind of data types:
+    - **Custom data types maps** contains well defined fields and their types.
+    - **Dynamic data types maps** are dynamic data structures where we don't know their fields. These kind of maps are very useful for saving arbitrary data.
+  - In case of dynamic maps, it is important to bound the size of map's keys and values (for example, a key cannot contain more than 50 characters).
+
+## Chapter 6 - Resource identification
