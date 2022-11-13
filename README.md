@@ -61,8 +61,8 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
 ## Chapter 5 - Data types and defaults
 
 - Serialization vs deserialization.
-  - Converting from language data representation to language-agnostic data representation (eg: JSON, XML) is called **Serialization**.
-  - Converting language-agnostic data representation to language data representation is called **Deserialization**.
+  - **Serialization** is converting from language data representation to language-agnostic representation (eg: JSON, XML).
+  - **Deserialization** is converting language-agnostic representation to language data representation (eg: from Rust struct to JSON).
 - Boolean data type.
   - Zero value is *false*.
   - Positive names are easier to understand than negative ones (eg: **allowedNumbers** vs **disallowedNumbers**)
@@ -78,14 +78,14 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
   - Advantages of using enumeration data type:
     - Easier validation.
     - Compresion because its data representation is usually using numbers instead of strings.
-  - API requests and responses should avoid use enumerations. In order to provide a better readibility, we should use strings.
+  - API requests and responses should avoid use enumerations. In order to provide a better readibility, strings is a more convenient data type.
 - List data type.
   - It should be atomic, which means that if one item of the list needs to be update, the entire list should be replaced.
   - It should not be possible to update a list field from a resource. For example, if we have a resource called Book where Book.categories is a list, book categories cannot be update using the Book resource API. Instead, we should use the Category resource API.
-  - It should have a size limit in order to avoid potential performance issues, specially when the resource can grow dynamically. Pagination is one of the mechanism to control the list size on an API response.
+  - It should have a size limit in order to avoid potential performance issues, specially when the resource can grow dynamically. Pagination is one of the mechanism to control the size of a list field from an API response.
 - Map data type.
   - Two kind of data types:
-    - **Custom data types maps** contains well defined fields and their types.
+    - **Custom data types maps** contain well defined fields and their types.
     - **Dynamic data types maps** are dynamic data structures where we don't know their fields. These kind of maps are very useful for saving arbitrary data.
   - In case of dynamic maps, it is important to bound the size of map's keys and values (for example, a key cannot contain more than 50 characters).
 
