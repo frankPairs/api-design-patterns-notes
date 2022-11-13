@@ -3,7 +3,6 @@
 Notes and reflections while reading [API Design Patterns by JJ Geewax](https://www.manning.com/books/api-design-patterns).
 
 ## Chapter 1 - Introduction to API's
-
 - An API defines interfaces where computers can "speak" between them in an easy way.
 - Stateless and Stateful API's:
   - API call is considered stateless when is independent from other API requests and does not need additional context. For example, and API that expects 2 numbers and it returns the sum of them.
@@ -18,15 +17,13 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
   - It is **simple**. It exposes the functionality that users want in the easiest possible way.
   - It is **predictable**. It applies well-known, well-define and simple patterns which are predictable and easy to learn.
 
-  ## Chapter 2 - Introduction to API design patterns
-
+## Chapter 2 - Introduction to API design patterns
   - Design patterns focus on specific components rather than entire systems.
   - There are two important aspects when we are designing an API: *flexibility* and *visibility*.
     - An API is flexible when accomodate changes is easy. Rigid designs are difficult to changes which means we have to carry on with the decisions made in the past.
     - Every API has public parts (the ones accessible by users) and private parts (implementation details that are hidden and not accessible). We can change private parts of our API as far as we keep the same public interfaces.
 
-  ## Chapter 3 - Naming
-
+## Chapter 3 - Naming
   - An API should could clear names for everyone, including those people that are not developing it.
   - Changing a name of a property from the public interface will affect to everyone using it. 
   - We can consider that a name is "good" if it has these qualities:
@@ -42,8 +39,7 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
   - Don't be obsess using primitives. Sometimes complex data types can express better and clearer what the concept means.
 
 
-  ## Chapter 4 - Resource scope and hierarchy
-
+## Chapter 4 - Resource scope and hierarchy
   - When we talk about a resource, we mean:
     - Arrangement of resources or "things" in our API.
     - Its fields describes their properties.
@@ -59,7 +55,6 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
     - Do you need to interact with a resource in isolation? Or it is always linked to another one? Answering those questions can provide you a hint of if a resource is really necessary.
 
 ## Chapter 5 - Data types and defaults
-
 - Serialization vs deserialization.
   - **Serialization** is converting from language data representation to language-agnostic representation (eg: JSON, XML).
   - **Deserialization** is converting language-agnostic representation to language data representation (eg: from Rust struct to JSON).
@@ -90,3 +85,22 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
   - In case of dynamic maps, it is important to bound the size of map's keys and values (for example, a key cannot contain more than 50 characters).
 
 ## Chapter 6 - Resource identification
+- An identifier is used to get a specific resource from a collection of them.
+- Properties of a good identifier:
+  - **Easy to use**. It can be part of a url, so easy to use means that the id cannot contain slashes.
+  - **Unique**. It should be unique in the system. If it is necessary, it could be necessary to make it globally unique althogh those situations are very rare and they require a more complex algorithms.
+  - **Permanent**. It should always belong to the same resource. When a resource is removed from the DB, it should not be possible to same its identifier for another one. Like legendary NBA players, their numbers cannot be used anymore after their retirement.
+  - **Unpredictable**. It should not use incremental numbers as makes it predicatable for potential attackers. UUIDs, ISBN (for books), or Crackford Base32 can help to make identifiers much more difficult to predict.
+  - **Readable, sharable and verifiable**. It should be easy for a user to share it or copy/paste from any device (desktop, mobile phone, or tablet).
+  - **Informationally dense**. It should save as much information as into very small space (max. 64 bits)
+- How an identifier should look like?:
+  - It is an string because string data type provides the highest information density and it makes them easy to use, read and share.
+  - Its char encoding format is ASCII. It is better than Unicode because it is more predictable (Unicode allows more than one way to represent the same chunk of text).
+  - Its serialization format is Crockford's Base32 as include all the characters to make an identifier readable (a-z, A-Z, 0-9) and a lot of special characters are not part of the format (like slashes).
+  - It includes a Checksum. A Checkums is a concatenation of characters that allows us to perform integrity checks. Including them at the end of an indentifier provides us a mechanism to know if the identifier is valid.
+  - It represents a specific resource. The most common way to do it is by adding a the resource type separate by a slash (```api/books/abcde-12345-ghjkm-67890```).
+  - It could represent a hierarchy relationship between two resources. The child of that relation can only be identify from its parent. For example, if we have a resource called Book an another one called Page where a Book is the **owner** of multiple pages, this would be the way to get a page from a book ```api/books/abcde-12345-ghjkm-67890/pages/2```. It should not be possible to identify a page without specifing its book.
+- Identifiers should be generated by the API in order to avoid potential problems like predicability, id collisions or security issues. Although in some situations, it could be convenient or necessary creating them from to the clients. For example, when using a replace standard method (we will talk more about it later).
+- They should not be repeated and that applies for removed resources. This requirement can be achieved by:
+  - Following a soft delete strategy.
+  - Saving all generated ids in a hash map and check them before creation.
