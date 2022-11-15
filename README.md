@@ -104,3 +104,10 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
 - They should not be repeated and that applies for removed resources. This requirement can be achieved by:
   - Following a soft delete strategy.
   - Saving all generated ids in a hash map and check them before creation.
+- Database storage:
+  - In most NoSQL databases, indexing a string field is very fast, so it is perfectly find to save identifiers as string data types.
+  - In relational databases, indexing numbers is usually faster than strings. An option could be save an 32/64 bits number although some relational databases work very well with UUIDs identifiers.
+- Why not using UUIDs?
+  - Very large (128 bits).
+  - Less readable and sharable than format like Crockford's Base32.
+  - No checksum, althogh is something we always can add.
