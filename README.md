@@ -3,6 +3,7 @@
 Notes and reflections while reading [API Design Patterns by JJ Geewax](https://www.manning.com/books/api-design-patterns).
 
 ## Chapter 1 - Introduction to API's
+
 - An API defines interfaces where computers can "speak" between them in an easy way.
 - Stateless and Stateful API's:
   - API call is considered stateless when is independent from other API requests and does not need additional context. For example, and API that expects 2 numbers and it returns the sum of them.
@@ -18,12 +19,14 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
   - It is **predictable**. It applies well-known, well-define and simple patterns which are predictable and easy to learn.
 
 ## Chapter 2 - Introduction to API design patterns
+
   - Design patterns focus on specific components rather than entire systems.
   - There are two important aspects when we are designing an API: *flexibility* and *visibility*.
     - An API is flexible when accomodate changes is easy. Rigid designs are difficult to changes which means we have to carry on with the decisions made in the past.
     - Every API has public parts (the ones accessible by users) and private parts (implementation details that are hidden and not accessible). We can change private parts of our API as far as we keep the same public interfaces.
 
 ## Chapter 3 - Naming
+
   - An API should could clear names for everyone, including those people that are not developing it.
   - Changing a name of a property from the public interface will affect to everyone using it. 
   - We can consider that a name is "good" if it has these qualities:
@@ -40,6 +43,7 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
 
 
 ## Chapter 4 - Resource scope and hierarchy
+
   - When we talk about a resource, we mean:
     - Arrangement of resources or "things" in our API.
     - Its fields describes their properties.
@@ -55,6 +59,7 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
     - Do you need to interact with a resource in isolation? Or it is always linked to another one? Answering those questions can provide you a hint of if a resource is really necessary.
 
 ## Chapter 5 - Data types and defaults
+
 - Serialization vs deserialization.
   - **Serialization** is converting from language data representation to language-agnostic representation (eg: JSON, XML).
   - **Deserialization** is converting language-agnostic representation to language data representation (eg: from Rust struct to JSON).
@@ -85,9 +90,10 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
   - In case of dynamic maps, it is important to bound the size of map's keys and values (for example, a key cannot contain more than 50 characters).
 
 ## Chapter 6 - Resource identification
+
 - An identifier is used to get a specific resource from a collection of them.
 - Properties of a good identifier:
-  - **Easy to use**. It can be part of a url, so easy to use means that the id cannot contain slashes.
+  - **Easy to use**. It can be used as a part of a url, so it takes into account some restrictions (for example, it can't contains slashes)
   - **Unique**. It should be unique in the system. If it is necessary, it could be necessary to make it globally unique althogh those situations are very rare and they require a more complex algorithms.
   - **Permanent**. It should always belong to the same resource. When a resource is removed from the DB, it should not be possible to same its identifier for another one. Like legendary NBA players, their numbers cannot be used anymore after their retirement.
   - **Unpredictable**. It should not use incremental numbers as makes it predicatable for potential attackers. UUIDs, ISBN (for books), or Crackford Base32 can help to make identifiers much more difficult to predict.
@@ -110,4 +116,19 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
 - Why not using UUIDs?
   - Very large (128 bits).
   - Less readable and sharable than format like Crockford's Base32.
-  - No checksum, althogh is something we always can add.
+  - No checksum, although is something we always can add.
+
+# Chapter 7 - Standard methods
+
+- It is easier and more predictable for consumers to use a REST API that is following the standards.
+- All the standard methods of a resource should be available (GET, POST, PUT, PATCH, DELETE). If one of them is not needed or we just do not want to expose it, the API should return a 405 Method Not Allowed response.
+- Some methods (like PUT) should be **idempotence**, which means that if a request is executed multiple times using the same paremeters, the response should be the same (assuming no other changes are happening concurrently).
+- A standard method should not contain any side effect (like calling an external service or executing an async operation).Manipulating data from the database is not consider as a side-effect. It is not consider like that because the main purpose of an API is providing a way to interact with data resources from the external world.
+- Standard methods:
+  - **List**
+    - It is totally acceptable to return different list of item depending on consumer permissions.
+    - Returning the count of the total number of items could be a bad idea. Specially when data can changes very often which will make its count number only real for a short amount of time. In case it is absolutely necessary, this should be documented properly to avoid confusions.
+    - It is not recommended to provide a sort mechanism on a standard list method. There are several reasons to avoid it:
+      - It can generate performance issues.
+      - Resources could potentially come from multiple databases, which would make the operation really complex.
+    - Filtering is a common tool APIs offer on a list standard method. An important consideration is that all filters should be strings a parsed later by the API.
