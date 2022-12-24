@@ -120,12 +120,13 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
 
 # Chapter 7 - Standard methods
 
-- It is easier and more predictable for consumers to use a REST API that is following the standards because .
+- It is easier and more predictable for consumers to use a REST API that is following the standards.
 - All the standard methods of a resource should be available (GET, POST, PUT, PATCH, DELETE). If one of them is not needed or we just do not want to expose it, the API should return a 405 Method Not Allowed response.
 - Some methods (like PUT) should be **idempotence**, which means that if a request is executed multiple times using the same paremeters, the response should be the same (assuming no other changes are happening concurrently).
 - A standard method should not contain any side effect (like calling an external service or executing an async operation).Manipulating data from the database is not consider as a side-effect. It is not consider like that because the main purpose of an API is providing a way to interact with data resources from the external world.
 - Standard methods:
   - **List**
+    - Get a list of resources relies on the GET HTTP method.
     - It is totally acceptable to return different list of items depending on consumer permissions.
     - Returning the count of the total number of items could be a bad idea. Specially when data can changes very often which will make that count number only real for a short amount of time. In case it is absolutely necessary, this should be documented properly to avoid confusions.
     - It is not recommended to provide a sort mechanism on a standard list method. There are several reasons to avoid it:
@@ -133,6 +134,7 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
       - Resources could potentially come from multiple databases, which would make the operation really complex.
     - Filtering is a common tool APIs offer on a list standard method. An important consideration is that all filters should be strings. They can be parsed later by the API.
   - **Create**
+    - Create a new resource relios on the POST HTTP method.
     - Generally, identifiers of new resources should be created by the API. However, some situations could required API clients creating them. This is totally fine although clients should always take into account id format and restrictions.
     - Standard create method has to be strongly consistent. This means that after creation, the new resource should be already available to read, update or delete. When this is not the case (for example, because the resource is created asynchronously), we should use a custom method instead. Remember that standard methods should always have the same behavior in order to provide a predictable API.
   - **Update**
@@ -140,15 +142,17 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
     - It does a partial update of a resource.
     - They should not include any side-effect (besides interacting with the database). This is important because in some situations we could need to trigger an async operation after updating a specific field/fields of a resource. Those situations should be managed by a custom method instead of a standard update.
   - **Delete**
+    - Delete a resource relies on the DELETE HTTP method.
     - A delete method should not be idempotent, which means that when a resource was already deleted, the right behavior of an API is to return a 404, as the resource does not exist anymore.
   - **Replace**
+    - Replace a resource relies on the PUT HTTP method.
     - Replace standard method provides a mechanism to replace an entire resource.
     - When a resource does not exist, it should create a new one. Because of that, replace standard method allows consumer of the API to create identifiers.
     - Optional fields from a resource will be deleted if them are not included in the request body.
   - Two kind of APIs:
     - **Imperative API**. Standard methods are focused on their actions. For example, a delete request is considered successful when the delete action was performed successfully. **Resource-oriented APIs are generally imperative**.
     - **Declarative API**. Standard methods are focused on their responses. Same example like before, a delete request will be considered successful even when the resource does not exist.
-    - In general, using standard methods following the behaviors exposed is a good idea as it will make your API easier to use.
-    - Of course, there are some situations where custom methods are necessary. Just be sure you do not use them because of a bad resource design.
+- In general, using standard methods following the behaviors exposed is a good idea as it will make your API easier to use.
+- Of course, there are some situations where custom methods are necessary. Just be sure you do not use them because of a bad resource design.
 
     # Chapter 8 - Partial updates and retrievals
