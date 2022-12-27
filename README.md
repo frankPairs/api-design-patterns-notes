@@ -157,12 +157,12 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
 
     # Chapter 8 - Partial updates and retrievals
 
-- Partial retrievals could be interesting and useful in some scenarios. One of them is when you are building an API there are network limitations (like one of the clients is a mobile app).
-- Partial updates provides a mechanism that allows our clients to be very specific about the data they want to update. The main difference between a partial update and the Replace standard method is that using Replace (PUT HTTP method) the resource will be replace using the request body, which effectively means that fields that were not added to the body will be erase from the resource. That behavior is not good for updating a resource as it can produce data inconsistencies.
+- Partial retrievals could be interesting and useful in some scenarios. One of them is when you are building an API, there are network limitations (like one of the clients is a mobile app).
+- Partial updates provide a mechanism that allows our clients to be very specific about the data they want to update. The main difference between a partial update and the Replace standard method is that using Replace (PUT HTTP method) the resource will be replaced using the request body, which effectively means that fields that were not added to the body will be erased from the resource. That behavior is not good for updating a resource, as it can produce data inconsistencies.
 - A field mask is a tool that can help us with partial updates and retrievals:
   - On retrievals, we can select the fields that we need from a resource.
-  - On updates, we can asume that the fields that are present on the JSON request body are the ones we one to update (actually, Update standard method works like that).
-- There is one important limitation for using field mask on retrievals: the GET method should not contain a request body. The best option to avoid this limitation is using URL query paramaters to define the field mask. Headers could be another option but usually it is easier for clients to interact with query parameters than with headers.
+  - On updates, we can assume that the fields that are present on the JSON request body are the ones we want to update (actually, Update standard method works like that).
+- There is one important limitation for using field mask on retrievals: the GET method should not contain a request body. The best option to avoid this limitation is using URL query parameters to define the field mask. Headers could be another option, but usually it is easier for clients to interact with query parameters than with headers.
 - Rules for defining nested field on a field mask:
   - Use dot character as a separator between fields (eg. ```user.address.country```)
   - All fields of a nested message may be referred to using an asterisk character (eg. ```user.address.*```)
@@ -172,8 +172,8 @@ Notes and reflections while reading [API Design Patterns by JJ Geewax](https://w
   - In order to get a specific field from a collection, we should use ```collection.*.field```.
   - Update or getting just one item from a collection is not possible using a field mask. The main reason is that we don't have a way to identify items.
 - As a default value:
-  - Partial retrievals: When request does not contain a field mask, retrievals should always return the entire resource or resources. There is one exception: when retreiving one of the fields can contain performance implications. In that case, those fields could be excluded by default.
-  - Partial updates: When request does not contain a field mask, updates should update all fields present on the request body.
-- How can we remove a field using a partial update? One of the best options is using a field mask param. When a field is present on the field mask but it is missing from the request body, we can assume that the client wants to remove it.
-- When we have a well defined resource and we try to update or get an unknown field, it is convenient to ignore it instead of throwing an error. The main motivation of having that API behavior is that our API can change and clients could be using fields previously accepted, but not anymore. Throwing an error in that case would create a bad API experience.
+  - Partial retrievals: When the request does not contain a field mask, retrievals should always return the entire resource or resources. There is one exception: when retrieving one of the fields can contain performance implications. In that case, those fields could be excluded by default.
+  - Partial updates: When a request does not contain a field mask, updates should update all fields present in the request body.
+- How can we remove a field using a partial update? One of the best options is using a field mask parameter. When a field is present on the field mask, but it is missing from the request body, we can assume that the client wants to remove it.
+- When we have a well-defined resource, and we try to update or get an unknown field, it is convenient to ignore it instead of throwing an error. The main motivation of having that API behavior is that our API can change and clients could be using fields previously accepted, but not anymore. Throwing an error in that case would create a bad API experience.
 - Field mask is not a SQL query tool. It should be used just as a tool to reduce the amount of information transferred through the network. If we need to retrieve data based on resources relationships, GraphQL is a better option.
