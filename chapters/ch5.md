@@ -1,0 +1,30 @@
+## Chapter 5 - Data types and defaults
+
+- Serialization vs deserialization.
+  - **Serialization** is converting from language data representation to language-agnostic representation (eg: JSON, XML).
+  - **Deserialization** is converting language-agnostic representation to language data representation (eg: from Rust struct to JSON).
+- Boolean data type.
+  - Zero value is *false*.
+  - Positive names are easier to understand than negative ones (eg: **allowedNumbers** vs **disallowedNumbers**)
+- Number data type.
+  - Zero value is *0* or *0.0*. 
+  - Number data types should be used when we expect clients of the API to do any kind of arithmetic operation with the field's value. For example, using numbers for ids is not a good fit.
+  - Serialize number data types to string could be an option for avoiding mismatches when client's programming language does not have appropiate native representation.
+- String data type.
+  - Zero value is *""*.
+  - An API should use UTF-8 encoding format unless there is any special reason not to do it.
+  - In order to create a predictable API, we should reject any string that exceed the size limit or that are not using the expected encoding format.
+- Enumeration data type.
+  - Advantages of using enumeration data type:
+    - Easier validation.
+    - Compresion because its data representation is usually using numbers instead of strings.
+  - API requests and responses should avoid use enumerations. In order to provide a better readibility, strings is a more convenient data type.
+- List data type.
+  - It should be atomic, which means that if one item of the list needs to be update, the entire list should be replaced.
+  - It should not be possible to update a list field from a resource. For example, if we have a resource called Book where Book.categories is a list, book categories cannot be update using the Book resource API. Instead, we should use the Category resource API.
+  - It should have a size limit in order to avoid potential performance issues, specially when the resource can grow dynamically. Pagination is one of the mechanism to control the size of a list field from an API response.
+- Map data type.
+  - Two kind of data types:
+    - **Custom data types maps** contain well defined fields and their types.
+    - **Dynamic data types maps** are dynamic data structures where we don't know their fields. These kind of maps are very useful for saving arbitrary data.
+  - In case of dynamic maps, it is important to bound the size of map's keys and values (for example, a key cannot contain more than 50 characters).
