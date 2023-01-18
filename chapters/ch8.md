@@ -1,6 +1,6 @@
 ## Chapter 8 - Partial updates and retrievals
 
-- Partial retrievals could be interesting and useful in some scenarios. One of them is when you are building an API, there are network limitations (like one of the clients is a mobile app).
+- Partial retrievals could be interesting and useful in some scenarios. One of them is when you are building an API, and there are network limitations (like one of the clients is a mobile app).
 - Partial updates provide a mechanism that allows our clients to be very specific about the data they want to update. The main difference between a partial update and the Replace standard method is that using Replace (PUT HTTP method) the resource will be replaced using the request body, which effectively means that fields that were not added to the body will be erased from the resource. That behavior is not good for updating a resource, as it can produce data inconsistencies.
 - A field mask is a tool that can help us with partial updates and retrievals:
   - On retrievals, we can select the fields that we need from a resource.
